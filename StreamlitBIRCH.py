@@ -9,14 +9,17 @@ import os
 def get_data_from_excel(  name  ):
 
     # Get the current directory path
-    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    #__location__ = os.path.realpath(  os.path.join( os.getcwd(), os.path.dirname(__file__) ))
+    __location__= os.getcwd()
+    FileName='/BirchDashboardData.xlsx'
+    __filepath__=  __location__ + FileName
     df = pd.read_excel( 
-	                        os.path.join(__location__, "BirchDashboardData.xlsx"),
-			                sheet_name=str(name)
-			          )
+	                        'BirchDashboardData.xlsx',
+	                        sheet_name=str(name)
+                      )
     return(df)
 
-df_Budget = get_data_from_excel('Budget')
+df_Budget = get_data_from_excel('Budget')   #pd.read_excel(   'BirchDashboardData.xlsx', sheet_name='Budget'    )
 df_ICCeiling = get_data_from_excel('IC Ceilings')
 df_Invoices = get_data_from_excel('Invoices')
 df_POs = get_data_from_excel('POs')
@@ -32,15 +35,15 @@ st.set_page_config(
 #Sidebar
 st.sidebar.header("Please Filter here:")
 country = st.sidebar.multiselect(
-		"Select the country:",
+		"Select the country/organization:",
 		options=df_Budget['OrganizationOrCountry'].unique(),
-		default=df_Budget['OrganizationOrCountry'].unique()
+		default='Chad'
 )
 
 SourceOfFunds = st.sidebar.multiselect(
 		"Select the source of funding:",
-		options=df_Budget['Funding source'].unique(),
-		default=df_Budget['Funding source'].unique()
+		options=df_Budget['FundingSource'].unique(),
+		default=df_Budget['FundingSource'].unique()
 )
 
 Provider = st.sidebar.multiselect(
@@ -54,7 +57,7 @@ df_selection = df_Budget.query(
 )
 
 df_ICCeiling_Selection = df_ICCeiling.query(
-		"OrganizationOrCountry == @country" 
+		"Country == @country" 
 )
 
 df_Invoices_Selection = df_Invoices.query(
@@ -89,7 +92,7 @@ with middle_column:
 	st.subheader(f"US${TotalBudget:,}")
 with right_column:
 	st.subheader("Total spent:")
-	st.subheader(f"{TotalSpent:,}%")
+	st.subheader(f"US${TotalSpent:,}")
 
 st.markdown("---")
 
@@ -100,7 +103,7 @@ Awards_by_Intervention = (
 
 fig_Awards_by_Intervention = px.bar(
 										Awards_by_Intervention,
-										x="TotalAwardUSD",
+										x="Budget",
 										y=Awards_by_Intervention.index,
 										orientation="h",
 										text_auto=True,
@@ -117,7 +120,11 @@ fig_Awards_by_Intervention.update_layout(
 												height=700,
 												plot_bgcolor="rgba(0,0,0,0)",
 												xaxis=(dict(showgrid=False))
-										)
+                                         )
+
+fig_Awards_by_Intervention.update_traces(
+                                           texttemplate='%{text:,.0f}', textfont_size=14
+                                        )
 
 st.dataframe(df_selection)
 st.plotly_chart(fig_Awards_by_Intervention)
