@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 #import openpyxl
 import plotly.express as px
-import json
+#import json
 import os
 
 def get_data_from_excel(  name  ):
