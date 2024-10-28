@@ -3,21 +3,41 @@ import pandas as pd
 import numpy as np
 import openpyxl
 import plotly.express as px
-#import json
+import json
 import os
+import gspread
+from google.oauth2.service_account import Credentials
 
 def get_data_from_excel(  name  ):
 
+    scope = [   "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"    ]
+
+    credentials = Credentials.from_service_account_info( st.secrets["gcp_service_account"], scopes=scope  )
+
+    #Authenticate and open the Google sheet
+    gc = gspread.authorize( credentials )
+    sheet = gc.open_by_url(  "https://docs.google.com/spreadsheets/d/1HyeMeiwmFHgwMTYt7vGYYABpiOB3Oq0WdQwY-rj1ATE"    )
+
+    #Access a specific worksheet
+    worksheet_name = str(name)
+    worksheet = sheet.worksheet( worksheet_name )
+
+    #Convert to dataframe
+    data = worksheet.get_all_records()
+    df = pd.DataFrame(data)
+
+    return(df)
+    
     # Get the current directory path
     #__location__ = os.path.realpath(  os.path.join( os.getcwd(), os.path.dirname(__file__) ))
-    __location__= os.getcwd()
-    FileName='/BirchDashboardData.xlsx'
-    __filepath__=  __location__ + FileName
-    df = pd.read_excel( 
-	                        'BirchDashboardData.xlsx',
-	                        sheet_name=str(name)
-                      )
-    return(df)
+    #__location__= os.getcwd()
+    #FileName='/BirchDashboardData.xlsx'
+    #__filepath__=  __location__ + FileName
+    #df = pd.read_excel( 
+    #	                        'BirchDashboardData.xlsx',
+    #	                        sheet_name=str(name)
+    #                  )
+    #return(df)
 
 df_Budget = get_data_from_excel('Budget')   #pd.read_excel(   'BirchDashboardData.xlsx', sheet_name='Budget'    )
 df_ICCeiling = get_data_from_excel('IC Ceilings')
