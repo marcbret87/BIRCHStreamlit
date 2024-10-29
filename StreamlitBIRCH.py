@@ -57,7 +57,7 @@ st.sidebar.header("Please Filter here:")
 country = st.sidebar.multiselect(
 		"Select the country/organization:",
 		options=df_Budget['OrganizationOrCountry'].unique(),
-		default='Chad'
+		default=df_Budget['OrganizationOrCountry'].unique()
 )
 
 SourceOfFunds = st.sidebar.multiselect(
@@ -102,17 +102,21 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 TotalApprovedCeiling  = int(df_ICCeiling_Selection['IC Approved Ceiling'].sum())
 TotalBudget = int(df_selection['Budget'].sum())
 TotalSpent = int(df_Invoices_Selection['Pre-payment Amount'].sum())
+Absorption=int(100*( df_Invoices_Selection['Pre-payment Amount'].sum()/df_selection['Budget'].sum() ))
 
-left_column, middle_column, right_column = st.columns(3)
+left_column, left_middle_column, right_middle_column, right_column = st.columns(4)
 with left_column:
 	st.subheader("Total IC Approved Ceiling:")
 	st.subheader(f"US${TotalApprovedCeiling:,}")
-with middle_column:
-	st.subheader("Total Budgeted:")
+with left_middle_column:
+	st.subheader("Total Budget:")
 	st.subheader(f"US${TotalBudget:,}")
-with right_column:
+with right_middle_column:
 	st.subheader("Total spent:")
 	st.subheader(f"US${TotalSpent:,}")
+with right_column:
+	st.subheader("Absorption:")
+	st.subheader(f"{Absorption}%")
 
 st.markdown("---")
 
@@ -139,12 +143,35 @@ fig_Awards_by_Intervention.update_layout(
 												width=2000,
 												height=700,
 												plot_bgcolor="rgba(0,0,0,0)",
-												xaxis=(dict(showgrid=False))
+												xaxis=(dict(showgrid=False)),
+											        title={
+													"text": "<b>Budget by Foundational Element</b>",  # Title text
+													"y": 0.95,  # Position title slightly below the top of the plot
+													"x": 0.5,   # Center the title horizontally
+													"xanchor": "center",  # Ensure horizontal center alignment
+													"yanchor": "top",     # Align the title text to the top
+													"font": {"size": 24}, # Set font size
+											        }
                                          )
 
 fig_Awards_by_Intervention.update_traces(
                                            texttemplate='%{text:,.0f}', textfont_size=14
                                         )
+                                        
+#Color-code based dataframe
+# Define a function to apply row-wise styling based on the Status column
+def highlight_row(row):
+    if row["Status"] == "Delayed":
+        return ["background-color: red"] * len(row)
+    elif row["Status"] == "On track":
+        return ["background-color: lightgreen"] * len(row)
+    elif row["Status"] == "Complete":
+        return ["background-color: green"] * len(row)
+    else:
+        return [""] * len(row)  # No styling for other statuses
+
+# Apply the styling to the DataFrame
+df_selection = df_selection.style.apply(highlight_row, axis=1)
 
 st.dataframe(df_selection)
 st.plotly_chart(fig_Awards_by_Intervention)
@@ -159,11 +186,23 @@ Awards_by_ACTAPillar = (
 						 )
 
 fig_Awards_by_BoardCategory = px.pie(
-											Awards_by_BoardCategory,
-											values='Budget',
-											names=Awards_by_BoardCategory.index,
-											title="<b>Budget by Provider</b>"
-									)
+						Awards_by_BoardCategory,
+						values='Budget',
+						names=Awards_by_BoardCategory.index,
+						title="<b>Budget by Provider</b>"
+				    )
+									
+fig_Awards_by_BoardCategory.update_layout(
+					        title={
+							"text": "<b>Budget by Provider</b>",  # Title text
+							"y": 0.95,  # Position title slightly below the top of the plot
+							"x": 0.5,   # Center the title horizontally
+							"xanchor": "center",  # Ensure horizontal center alignment
+							"yanchor": "top",     # Align the title text to the top
+							"font": {"size": 16}, # Set font size
+					        }
+                                         )
+
 									
 fig_Awards_by_ACTAPillar = px.pie(
 											Awards_by_ACTAPillar,
@@ -171,6 +210,19 @@ fig_Awards_by_ACTAPillar = px.pie(
 											names=Awards_by_ACTAPillar.index,
 											title="<b>Budget by Founding Source</b>"
 								 )
+
+fig_Awards_by_ACTAPillar.update_layout(
+					        title={
+							"text": "<b>Budget by Founding Source</b>",  # Title text
+							"y": 0.95,  # Position title slightly below the top of the plot
+							"x": 0.5,   # Center the title horizontally
+							"xanchor": "center",  # Ensure horizontal center alignment
+							"yanchor": "top",     # Align the title text to the top
+							"font": {"size": 16}, # Set font size
+					        }
+                                         )
+
+
 #Place the pie charts
 left_column, right_column = st.columns(2)
 left_column.plotly_chart(fig_Awards_by_BoardCategory)
