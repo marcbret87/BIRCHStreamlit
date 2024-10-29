@@ -57,7 +57,7 @@ st.sidebar.header("Please Filter here:")
 country = st.sidebar.multiselect(
 		"Select the country/organization:",
 		options=df_Budget['OrganizationOrCountry'].unique(),
-		default=df_Budget['OrganizationOrCountry'].unique()
+		default='Chad' #df_Budget['OrganizationOrCountry'].unique()
 )
 
 SourceOfFunds = st.sidebar.multiselect(
@@ -171,9 +171,9 @@ def highlight_row(row):
         return [""] * len(row)  # No styling for other statuses
 
 # Apply the styling to the DataFrame
-df_selection = df_selection.style.apply(highlight_row, axis=1)
+df_selection_color = df_selection.style.apply(highlight_row, axis=1)
 
-st.dataframe(df_selection)
+st.dataframe(df_selection_color)
 st.plotly_chart(fig_Awards_by_Intervention)
 
 #Pie charts for Board Category and ACT-A Pillars
@@ -209,7 +209,7 @@ fig_Awards_by_ACTAPillar = px.pie(
 											values='Budget',
 											names=Awards_by_ACTAPillar.index,
 											title="<b>Budget by Founding Source</b>"
-								 )
+				 )
 
 fig_Awards_by_ACTAPillar.update_layout(
 					        title={
