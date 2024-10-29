@@ -179,11 +179,11 @@ st.plotly_chart(fig_Awards_by_Intervention)
 #Pie charts for Board Category and ACT-A Pillars
 Awards_by_BoardCategory = (
 							df_selection.groupby( by=["Provider"] ).sum()[['Budget']].sort_values(by="Budget")
-						 )
+			  )
 
 Awards_by_ACTAPillar = (
 							df_selection.groupby( by=["FundingSource"] ).sum()[['Budget']].sort_values(by="Budget")
-						 )
+		       )
 
 fig_Awards_by_BoardCategory = px.pie(
 						Awards_by_BoardCategory,
