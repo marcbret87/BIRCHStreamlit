@@ -172,8 +172,21 @@ def highlight_row(row):
 
 # Apply the styling to the DataFrame
 df_selection_color = df_selection.style.apply(highlight_row, axis=1)
-
 st.dataframe(df_selection_color)
+#Add legend
+# Create a legend below the DataFrame
+legend_html = """
+<div style="display: flex; flex-direction: column;">
+    <div style="background-color: red; padding: 5px; color: white;">Delayed</div>
+    <div style="background-color: lightgreen; padding: 5px;">On track</div>
+    <div style="background-color: green; padding: 5px;">Complete</div>
+</div>
+"""
+
+#Add plot
+st.markdown(legend_html, unsafe_allow_html=True)
+
+
 st.plotly_chart(fig_Awards_by_Intervention)
 
 #Pie charts for Board Category and ACT-A Pillars
