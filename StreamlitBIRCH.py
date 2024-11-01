@@ -65,8 +65,8 @@ df_Invoices = get_metadata_from_excel('Invoices')
 df_POs = get_metadata_from_excel('POs')
 
 def convert_to_link(cell_value):
-    # Check if the cell is empty or None
-    if not cell_value:
+    # Check if the cell is empty, None, or not a string
+    if not cell_value or not isinstance(cell_value, str):
         return ""
     
     # Check if the cell contains both link text and URL in the format 'text (url)'
@@ -81,6 +81,7 @@ def convert_to_link(cell_value):
     
     # If it's just text without a hyperlink
     return cell_value
+
 
 # Apply this to cells in the column(s) with hyperlinks
 df_Invoices["Associated PO"] = df_Invoices["Associated PO"].apply(convert_to_link)
