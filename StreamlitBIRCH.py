@@ -64,24 +64,14 @@ df_ICCeiling = get_data_from_excel('IC Ceilings')
 df_Invoices = get_metadata_from_excel('Invoices')
 df_POs = get_metadata_from_excel('POs')
 
-# Example function to convert links
-def convert_to_link(cell_value):
-    # Check if the cell is empty, None, or not a string
-    if not cell_value or not isinstance(cell_value, str):
-        return ""
+# Function to convert URLs to clickable links
+def convert_to_link(url):
+    # Check if the cell is empty or not a string
+    if url is None or not isinstance(url, str) or url.strip() == "":
+        return ""  # Return an empty string if the cell is empty or just plain text
     
-    # Check if the cell contains both link text and URL in the format 'text (url)'
-    if "(" in cell_value and ")" in cell_value:
-        text, url = cell_value.split(" (", 1)
-        url = url.strip(")")
-        return f'<a href="{url}">{text}</a>'
-    
-    # Check if the cell contains just a URL by testing for 'http' or 'www'
-    if cell_value.startswith("http") or cell_value.startswith("www"):
-        return f'<a href="{cell_value}">{cell_value}</a>'
-    
-    # If it's just text without a hyperlink
-    return cell_value
+    # Return the HTML anchor tag for the URL
+    return f'<a href="{url}" target="_blank">{url}</a>'
 
 
 # Apply this to cells in the column(s) with hyperlinks
@@ -246,13 +236,13 @@ st.markdown(legend_html, unsafe_allow_html=True)
 #Display the other dataframes
 st.header("Purchase Orders")
 # Display the DataFrame with hyperlinks
-st.markdown(df_POs_Selection.to_html(escape=False), unsafe_allow_html=True)
+st.markdown(df_POs_Selection.to_html(escape=False, index=False), unsafe_allow_html=True)
 #st.dataframe(df_POs_Selection)
 
 #Display the other dataframes
 st.header("Invoices")
 # Display the DataFrame with hyperlinks
-st.markdown(df_Invoices_Selection.to_html(escape=False), unsafe_allow_html=True)
+st.markdown(df_Invoices_Selection.to_html(escape=False, index=False), unsafe_allow_html=True)
 #st.dataframe(df_Invoices_Selection)
 
 #Add Bar chart
