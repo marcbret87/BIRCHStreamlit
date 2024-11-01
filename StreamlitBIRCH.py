@@ -64,6 +64,7 @@ df_ICCeiling = get_data_from_excel('IC Ceilings')
 df_Invoices = get_metadata_from_excel('Invoices')
 df_POs = get_metadata_from_excel('POs')
 
+# Example function to convert links
 def convert_to_link(cell_value):
     # Check if the cell is empty, None, or not a string
     if not cell_value or not isinstance(cell_value, str):
