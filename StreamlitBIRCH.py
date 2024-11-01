@@ -131,7 +131,7 @@ df_POs_Selection = df_POs.query(
 		"Country == @country" 
 )
 
-df_Deliverables_Selection = df_POs.query(
+df_Deliverables_Selection = df_Deliverables.query(
 		"Country == @country" 
 )
 
