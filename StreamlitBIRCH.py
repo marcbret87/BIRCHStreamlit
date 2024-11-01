@@ -61,6 +61,7 @@ def get_metadata_from_excel(  name  ):
 
 df_Budget = get_data_from_excel('Budget')   #pd.read_excel(   'BirchDashboardData.xlsx', sheet_name='Budget'    )
 df_ICCeiling = get_data_from_excel('IC Ceilings')
+df_Deliverables = get_data_from_excel('Deliverables')
 df_Invoices = get_metadata_from_excel('Invoices')
 df_POs = get_metadata_from_excel('POs')
 
@@ -99,7 +100,7 @@ st.sidebar.header("Please Filter here:")
 country = st.sidebar.multiselect(
 		"Select the country/organization:",
 		options=df_Budget['OrganizationOrCountry'].unique(),
-		default='Chad' #df_Budget['OrganizationOrCountry'].unique()
+		default=df_Budget['OrganizationOrCountry'].unique()
 )
 
 SourceOfFunds = st.sidebar.multiselect(
@@ -130,6 +131,9 @@ df_POs_Selection = df_POs.query(
 		"Country == @country" 
 )
 
+df_Deliverables_Selection = df_POs.query(
+		"Country == @country" 
+)
 
 #Mainpage
 st.title(":bar_chart: BIRCH Dashboard")
@@ -244,6 +248,13 @@ st.header("Invoices")
 # Display the DataFrame with hyperlinks
 st.markdown(df_Invoices_Selection.to_html(escape=False, index=False), unsafe_allow_html=True)
 #st.dataframe(df_Invoices_Selection)
+
+#Display the other dataframes
+st.header("Invoices")
+# Display the DataFrame with hyperlinks
+#st.markdown(df_Invoices_Selection.to_html(escape=False, index=False), unsafe_allow_html=True)
+st.dataframe(df_Deliverables_Selection)
+
 
 #Add Bar chart
 st.plotly_chart(fig_Awards_by_Intervention)
