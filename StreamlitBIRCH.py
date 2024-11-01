@@ -250,7 +250,7 @@ st.markdown(df_Invoices_Selection.to_html(escape=False, index=False), unsafe_all
 #st.dataframe(df_Invoices_Selection)
 
 #Display the other dataframes
-st.header("Invoices")
+st.header("Deliverables")
 # Display the DataFrame with hyperlinks
 #st.markdown(df_Invoices_Selection.to_html(escape=False, index=False), unsafe_allow_html=True)
 st.dataframe(df_Deliverables_Selection)
