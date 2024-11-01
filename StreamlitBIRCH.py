@@ -7,6 +7,7 @@ import json
 import os
 import gspread
 from google.oauth2.service_account import Credentials
+from gspread_dataframe import get_as_dataframe
 
 def get_data_from_excel(  name  ):
 
@@ -27,7 +28,26 @@ def get_data_from_excel(  name  ):
     df = pd.DataFrame(data)
 
     return(df)
-    
+
+def get_metadata_from_excel(  name  ):
+
+    scope = [   "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"    ]
+
+    credentials = Credentials.from_service_account_info( st.secrets["gcp_service_account"], scopes=scope  )
+
+    #Authenticate and open the Google sheet
+    gc = gspread.authorize( credentials )
+    sheet = gc.open_by_url(  "https://docs.google.com/spreadsheets/d/1HyeMeiwmFHgwMTYt7vGYYABpiOB3Oq0WdQwY-rj1ATE"    )
+
+    #Access a specific worksheet
+    worksheet_name = str(name)
+    worksheet = sheet.worksheet( worksheet_name )
+
+    # Convert to DataFrame, evaluating formulas to retrieve hyperlinks
+    df = get_as_dataframe(worksheet, evaluate_formulas=True)
+
+    return(df)
+
     # Get the current directory path
     #__location__ = os.path.realpath(  os.path.join( os.getcwd(), os.path.dirname(__file__) ))
     #__location__= os.getcwd()
@@ -41,11 +61,41 @@ def get_data_from_excel(  name  ):
 
 df_Budget = get_data_from_excel('Budget')   #pd.read_excel(   'BirchDashboardData.xlsx', sheet_name='Budget'    )
 df_ICCeiling = get_data_from_excel('IC Ceilings')
-df_Invoices = get_data_from_excel('Invoices')
-df_POs = get_data_from_excel('POs')
+df_Invoices = get_metadata_from_excel('Invoices')
+df_POs = get_metadata_from_excel('POs')
 
+def convert_to_link(cell_value):
+    # Check if the cell is empty or None
+    if not cell_value:
+        return ""
+    
+    # Check if the cell contains both link text and URL in the format 'text (url)'
+    if "(" in cell_value and ")" in cell_value:
+        text, url = cell_value.split(" (", 1)
+        url = url.strip(")")
+        return f'<a href="{url}">{text}</a>'
+    
+    # Check if the cell contains just a URL by testing for 'http' or 'www'
+    if cell_value.startswith("http") or cell_value.startswith("www"):
+        return f'<a href="{cell_value}">{cell_value}</a>'
+    
+    # If it's just text without a hyperlink
+    return cell_value
+
+# Apply this to cells in the column(s) with hyperlinks
+df_Invoices["Associated PO"] = df_Invoices["Associated PO"].apply(convert_to_link)
+df_Invoices["Invoice Name"] = df_Invoices["Invoice Name"].apply(convert_to_link)
+df_Invoices["Invoice Drafted"] = df_Invoices["Invoice Drafted"].apply(convert_to_link)
+df_POs["Workplan and Budget"] = df_POs["Workplan and Budget"].apply(convert_to_link)
+df_POs["Workplan and Budget .xlsx"] = df_POs["Workplan and Budget .xlsx"].apply(convert_to_link)
+df_POs["SEAH"] = df_POs["SEAH"].apply(convert_to_link)
+df_POs["Due Diligence/Partner Review"] = df_POs["Due Diligence/Partner Review"].apply(convert_to_link)
+df_POs["POs drafted"] = df_POs["POs drafted"].apply(convert_to_link)
+df_POs["PO Signed"] = df_POs["PO Signed"].apply(convert_to_link)
+
+#Set page header
 st.set_page_config(
-							page_title="BIRCH Dashboard",
+							page_title="BIRCH Project Overview",
 							page_icon=":bar_chart:",
 							layout="wide"
 				  )
@@ -83,6 +133,11 @@ df_ICCeiling_Selection = df_ICCeiling.query(
 df_Invoices_Selection = df_Invoices.query(
 		"OrganizationOrCountry == @country" 
 )
+
+df_POs_Selection = df_POs.query(
+		"Country == @country" 
+)
+
 
 #Mainpage
 st.title(":bar_chart: BIRCH Dashboard")
@@ -171,6 +226,7 @@ def highlight_row(row):
         return [""] * len(row)  # No styling for other statuses
 
 # Apply the styling to the DataFrame
+st.header("Budget breakdown")
 df_selection_color = df_selection.style.apply(highlight_row, axis=1)
 st.dataframe(df_selection_color)
 #Add legend
@@ -182,12 +238,22 @@ legend_html = """
     <div style="background-color: green; padding: 5px;">Complete</div>
 </div>
 """
-
 #Add plot
 st.markdown(legend_html, unsafe_allow_html=True)
 
+#Display the other dataframes
+st.header("Purchase Orders")
+# Display the DataFrame with hyperlinks
+st.markdown(df_POs_Selection.to_html(escape=False), unsafe_allow_html=True)
 
+#Display the other dataframes
+st.header("Invoices")
+# Display the DataFrame with hyperlinks
+st.markdown(df_Invoices_Selection.to_html(escape=False), unsafe_allow_html=True)
+
+#Add Bar chart
 st.plotly_chart(fig_Awards_by_Intervention)
+
 
 #Pie charts for Board Category and ACT-A Pillars
 Awards_by_BoardCategory = (
@@ -234,7 +300,6 @@ fig_Awards_by_ACTAPillar.update_layout(
 							"font": {"size": 16}, # Set font size
 					        }
                                          )
-
 
 #Place the pie charts
 left_column, right_column = st.columns(2)
