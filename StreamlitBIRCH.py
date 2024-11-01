@@ -245,12 +245,14 @@ st.markdown(legend_html, unsafe_allow_html=True)
 #Display the other dataframes
 st.header("Purchase Orders")
 # Display the DataFrame with hyperlinks
-st.markdown(df_POs_Selection.to_html(escape=False), unsafe_allow_html=True)
+#st.markdown(df_POs_Selection.to_html(escape=False), unsafe_allow_html=True)
+st.dataframe(df_POs_Selection)
 
 #Display the other dataframes
 st.header("Invoices")
 # Display the DataFrame with hyperlinks
-st.markdown(df_Invoices_Selection.to_html(escape=False), unsafe_allow_html=True)
+#st.markdown(df_Invoices_Selection.to_html(escape=False), unsafe_allow_html=True)
+st.dataframe(df_Invoices_Selection)
 
 #Add Bar chart
 st.plotly_chart(fig_Awards_by_Intervention)
