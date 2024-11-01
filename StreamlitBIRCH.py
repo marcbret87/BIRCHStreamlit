@@ -85,15 +85,15 @@ def convert_to_link(cell_value):
 
 
 # Apply this to cells in the column(s) with hyperlinks
-df_Invoices["Associated PO"] = df_Invoices["Associated PO"].apply(convert_to_link)
-df_Invoices["Invoice Name"] = df_Invoices["Invoice Name"].apply(convert_to_link)
-df_Invoices["Invoice Drafted"] = df_Invoices["Invoice Drafted"].apply(convert_to_link)
-df_POs["Workplan and Budget"] = df_POs["Workplan and Budget"].apply(convert_to_link)
-df_POs["Workplan and Budget .xlsx"] = df_POs["Workplan and Budget .xlsx"].apply(convert_to_link)
-df_POs["SEAH"] = df_POs["SEAH"].apply(convert_to_link)
-df_POs["Due Diligence/Partner Review"] = df_POs["Due Diligence/Partner Review"].apply(convert_to_link)
-df_POs["POs drafted"] = df_POs["POs drafted"].apply(convert_to_link)
-df_POs["PO Signed"] = df_POs["PO Signed"].apply(convert_to_link)
+df_Invoices["Associated PO Link"] = df_Invoices["Associated PO Link"].apply(convert_to_link)
+df_Invoices["Invoice Link"] = df_Invoices["Invoice Link"].apply(convert_to_link)
+df_Invoices["Invoice Draft Link"] = df_Invoices["Invoice Draft Link"].apply(convert_to_link)
+df_POs["Workplan and Budget Link"] = df_POs["Workplan and Budget Link"].apply(convert_to_link)
+df_POs["Workplan and Budget .xlsx Link"] = df_POs["Workplan and Budget .xlsx Link"].apply(convert_to_link)
+df_POs["SEAH Link"] = df_POs["SEAH Link"].apply(convert_to_link)
+df_POs["Due Diligence/Partner Review Link"] = df_POs["Due Diligence/Partner Review Link"].apply(convert_to_link)
+df_POs["POs drafted Link"] = df_POs["POs drafted Link"].apply(convert_to_link)
+df_POs["PO Signed Link"] = df_POs["PO Signed Link"].apply(convert_to_link)
 
 #Set page header
 st.set_page_config(
