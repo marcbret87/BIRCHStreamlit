@@ -136,7 +136,7 @@ df_Deliverables_Selection = df_Deliverables.query(
 )
 
 #Mainpage
-st.title(":bar_chart: BIRCH Dashboard")
+st.title(":bar_chart: BIRCH Project Overview")
 st.markdown("##")
 
 # hide streamlit style
