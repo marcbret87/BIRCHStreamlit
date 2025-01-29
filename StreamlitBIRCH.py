@@ -229,7 +229,7 @@ def highlight_row(row):
     elif row["Current Status of deliverable"] == "Complete":
         return ["background-color: green"] * len(row)
     else:
-        return [""] * len(row)  # No styling for other statuses
+        return ["background-color: black"] * len(row)  # No styling for other statuses
 
 # Apply the styling to the DataFrame
 st.header("Budget breakdown")
