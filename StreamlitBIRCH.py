@@ -68,7 +68,7 @@ df_Budget_ICHESS = get_data_from_excel('Tracker', 'https://docs.google.com/sprea
 df_Budget_ICHESS.insert(  1, 'Provider', 'ICHESS'  )
 df_Budget_JHPIEGO = get_data_from_excel( 'Tracker', 'https://docs.google.com/spreadsheets/d/1Q0An0_RGG2IvzUQEB5HAZOA87DCkvnwk8bDZ6hvkEFU' )
 df_Budget_JHPIEGO.insert(  1, 'Provider', 'JHPIEGO'  )
-df_Budget = pd.concat([  df_Budget_LMH, df_Budget_CHAI, df_Budget_ICHESS, df_Budget_JHPIEGO   ])
+df_Budget = pd.concat([  df_Budget_LMH, df_Budget_CHAI, df_Budget_ICHESS, df_Budget_JHPIEGO   ], ignore_index=True )
 #Retrieve invoices and everything else from the main sheet
 df_ICCeiling = get_data_from_excel('IC Ceilings', "https://docs.google.com/spreadsheets/d/1HyeMeiwmFHgwMTYt7vGYYABpiOB3Oq0WdQwY-rj1ATE" )
 df_Deliverables = get_data_from_excel('Deliverables', "https://docs.google.com/spreadsheets/d/1HyeMeiwmFHgwMTYt7vGYYABpiOB3Oq0WdQwY-rj1ATE")
@@ -250,14 +250,14 @@ st.markdown(legend_html, unsafe_allow_html=True)
 #Display the other dataframes
 st.header("Purchase Orders")
 # Display the DataFrame with hyperlinks
-#st.markdown(df_POs_Selection.to_html(escape=False, index=False), unsafe_allow_html=True)
-st.dataframe(df_POs_Selection)
+st.markdown(df_POs_Selection.to_html(escape=False, index=False), unsafe_allow_html=True)
+#st.dataframe(df_POs_Selection)
 
 #Display the other dataframes
 st.header("Invoices")
 # Display the DataFrame with hyperlinks
-#st.markdown(df_Invoices_Selection.to_html(escape=False, index=False), unsafe_allow_html=True)
-st.dataframe(df_Invoices_Selection)
+st.markdown(df_Invoices_Selection.to_html(escape=False, index=False), unsafe_allow_html=True)
+#st.dataframe(df_Invoices_Selection)
 
 #Display the other dataframes
 st.header("Deliverables")
