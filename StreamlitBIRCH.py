@@ -9,27 +9,29 @@ import gspread
 from google.oauth2.service_account import Credentials
 from gspread_dataframe import get_as_dataframe
 
-@st.cache_data(ttl=300)  # Cache for 5 minutes
-def get_data_from_excel(  name, url  ):
+#Set page header
+st.set_page_config(
+							page_title="BIRCH Project Overview",
+							page_icon=":bar_chart:",
+							layout="wide"
+				  )
+	
 
-    scope = [   "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"    ]
+@st.cache_data(ttl=300)  # Cache data for 5 minutes
+def get_data_from_excel(name, url):
+    try:
+        scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+        credentials = Credentials.from_service_account_info(st.secrets["gcp_service_account"], scopes=scope)
+        gc = gspread.authorize(credentials)
+        sheet = gc.open_by_url(str(url))
+        worksheet = sheet.worksheet(str(name))
+        data = worksheet.get_all_records()
+        df = pd.DataFrame(data)
+        return df
+    except Exception as e:
+        st.error(f"Error fetching data from Google Sheets: {e}")
+        return pd.DataFrame()  # Return empty DataFrame on failure
 
-    credentials = Credentials.from_service_account_info( st.secrets["gcp_service_account"], scopes=scope  )
-
-    #Authenticate and open the Google sheet
-    gc = gspread.authorize( credentials )
-    sheet = gc.open_by_url(  str(url)    )
-    #sheet = gc.open_by_url(  "https://docs.google.com/spreadsheets/d/1HyeMeiwmFHgwMTYt7vGYYABpiOB3Oq0WdQwY-rj1ATE"    )
-
-    #Access a specific worksheet
-    worksheet_name = str(name)
-    worksheet = sheet.worksheet( worksheet_name )
-
-    #Convert to dataframe
-    data = worksheet.get_all_records()
-    df = pd.DataFrame(data)
-
-    return(df)
 
 def get_metadata_from_excel(  name, url  ):
 
@@ -97,13 +99,7 @@ def convert_to_link(url):
 #f_POs["POs drafted Link"] = df_POs["POs drafted Link"].apply(convert_to_link)
 #f_POs["PO Signed Link"] = df_POs["PO Signed Link"].apply(convert_to_link)
 
-#Set page header
-st.set_page_config(
-							page_title="BIRCH Project Overview",
-							page_icon=":bar_chart:",
-							layout="wide"
-				  )
-	
+
 #st.dataframe(df_Budget)
 
 #Sidebar
