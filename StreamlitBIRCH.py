@@ -222,11 +222,11 @@ fig_Awards_by_Intervention.update_traces(
 #Color-code based dataframe
 # Define a function to apply row-wise styling based on the Status column
 def highlight_row(row):
-    if row["Status"] == "Delayed":
+    if row["Current Status of deliverable"] == "Delayed":
         return ["background-color: red"] * len(row)
-    elif row["Status"] == "On track":
+    elif row["Current Status of deliverable"] == "On track" or row["Current Status of deliverable"] == "On-track":
         return ["background-color: lightgreen"] * len(row)
-    elif row["Status"] == "Complete":
+    elif row["Current Status of deliverable"] == "Complete":
         return ["background-color: green"] * len(row)
     else:
         return [""] * len(row)  # No styling for other statuses
