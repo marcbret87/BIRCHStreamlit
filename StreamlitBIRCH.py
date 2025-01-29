@@ -9,7 +9,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 from gspread_dataframe import get_as_dataframe
 
-def get_data_from_excel(  name  ):
+def get_data_from_excel(  name, url  ):
 
     scope = [   "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"    ]
 
@@ -17,7 +17,8 @@ def get_data_from_excel(  name  ):
 
     #Authenticate and open the Google sheet
     gc = gspread.authorize( credentials )
-    sheet = gc.open_by_url(  "https://docs.google.com/spreadsheets/d/1HyeMeiwmFHgwMTYt7vGYYABpiOB3Oq0WdQwY-rj1ATE"    )
+    sheet = gc.open_by_url(  str(url)    )
+    #sheet = gc.open_by_url(  "https://docs.google.com/spreadsheets/d/1HyeMeiwmFHgwMTYt7vGYYABpiOB3Oq0WdQwY-rj1ATE"    )
 
     #Access a specific worksheet
     worksheet_name = str(name)
