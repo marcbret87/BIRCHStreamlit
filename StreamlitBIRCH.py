@@ -29,7 +29,7 @@ def get_data_from_excel(  name  ):
 
     return(df)
 
-def get_metadata_from_excel(  name  ):
+def get_metadata_from_excel(  name, url  ):
 
     scope = [   "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"    ]
 
@@ -37,7 +37,7 @@ def get_metadata_from_excel(  name  ):
 
     #Authenticate and open the Google sheet
     gc = gspread.authorize( credentials )
-    sheet = gc.open_by_url(  "https://docs.google.com/spreadsheets/d/1HyeMeiwmFHgwMTYt7vGYYABpiOB3Oq0WdQwY-rj1ATE"    )
+    sheet = gc.open_by_url(  str(url)    )
 
     #Access a specific worksheet
     worksheet_name = str(name)
@@ -58,12 +58,21 @@ def get_metadata_from_excel(  name  ):
     #	                        sheet_name=str(name)
     #                  )
     #return(df)
-
-df_Budget = get_data_from_excel('Budget')   #pd.read_excel(   'BirchDashboardData.xlsx', sheet_name='Budget'    )
-df_ICCeiling = get_data_from_excel('IC Ceilings')
-df_Deliverables = get_data_from_excel('Deliverables')
-df_Invoices = get_metadata_from_excel('Invoices')
-df_POs = get_metadata_from_excel('POs')
+#Retrieve info from each provider
+df_Budget_LMH = get_data_from_excel('Tracker', 'https://docs.google.com/spreadsheets/d/1AtleZY2uwjDi4AhG58aggfcK8xeVYvp8DN_UA3OV5eY' )   
+df_Budget_LMH.insert(  1, 'Provider', 'LMH'  )
+df_Budget_CHAI = get_data_from_excel('Tracker', 'https://docs.google.com/spreadsheets/d/1v5Zo3EQ8TlmR9fluEWAa9cW-1OnwZQpN2U-2JKKzaN8' )
+df_Budget_CHAI.insert(  1, 'Provider', 'CHAI'  )
+df_Budget_ICHESS = get_data_from_excel('Tracker', 'https://docs.google.com/spreadsheets/d/1obbDO0Z-W8etRzMocabYFTCgR0dzoSbBzv7y07PkBlM' )
+df_Budget_ICHESS.insert(  1, 'Provider', 'ICHESS'  )
+df_Budget_JHPIEGO = get_data_from_excel('Tracker', 'https://docs.google.com/spreadsheets/d/1Q0An0_RGG2IvzUQEB5HAZOA87DCkvnwk8bDZ6hvkEFU' )
+df_Budget_JHPIEGO.insert(  1, 'Provider', 'JHPIEGO'  )
+df_Budget = pd.concat([  df_Budget_LMH, df_Budget_CHAI, df_Budget_ICHESS, df_Budget_JHPIEGO   ])
+#Retrieve invoices and everything else from the main sheet
+df_ICCeiling = get_data_from_excel('IC Ceilings', "https://docs.google.com/spreadsheets/d/1HyeMeiwmFHgwMTYt7vGYYABpiOB3Oq0WdQwY-rj1ATE" )
+df_Deliverables = get_data_from_excel('Deliverables', "https://docs.google.com/spreadsheets/d/1HyeMeiwmFHgwMTYt7vGYYABpiOB3Oq0WdQwY-rj1ATE")
+df_Invoices = get_metadata_from_excel('Invoices', "https://docs.google.com/spreadsheets/d/1HyeMeiwmFHgwMTYt7vGYYABpiOB3Oq0WdQwY-rj1ATE")
+df_POs = get_metadata_from_excel('POs', "https://docs.google.com/spreadsheets/d/1HyeMeiwmFHgwMTYt7vGYYABpiOB3Oq0WdQwY-rj1ATE")
 
 # Function to convert URLs to clickable links
 def convert_to_link(url):
@@ -99,8 +108,8 @@ st.set_page_config(
 st.sidebar.header("Please Filter here:")
 country = st.sidebar.multiselect(
 		"Select the country/organization:",
-		options=df_Budget['OrganizationOrCountry'].unique(),
-		default=df_Budget['OrganizationOrCountry'].unique()
+		options=df_Budget['Country'].unique(),
+		default=df_Budget['Country'].unique()
 )
 
 SourceOfFunds = st.sidebar.multiselect(
@@ -116,7 +125,7 @@ Provider = st.sidebar.multiselect(
 )
 
 df_selection = df_Budget.query(
-		"OrganizationOrCountry == @country & Provider == @Provider & FundingSource == @SourceOfFunds"
+		"Country == @country & Provider == @Provider & FundingSource == @SourceOfFunds"
 )
 
 df_ICCeiling_Selection = df_ICCeiling.query(
