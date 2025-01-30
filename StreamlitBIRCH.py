@@ -163,7 +163,7 @@ try:
 except:
 	TotalBudget = -999
 TotalSpent = int(df_Invoices_Selection['Pre-payment Amount'].sum())
-Absorption=int(100*( df_Invoices_Selection['Pre-payment Amount'].sum()/df_selection['Budget'].sum() ))
+Absorption=int(100*( df_Invoices_Selection['Pre-payment Amount'].sum()/TotalBudget ))
 
 left_column, left_middle_column, right_middle_column, right_column = st.columns(4)
 with left_column:
