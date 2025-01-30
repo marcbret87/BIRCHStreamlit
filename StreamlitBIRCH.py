@@ -158,7 +158,10 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 
 #Top KPIs
 TotalApprovedCeiling  = int(df_ICCeiling_Selection['IC Approved Ceiling'].sum())
-TotalBudget = int(df_selection['Budget'].sum())
+try:
+	TotalBudget = int(df_selection['Budget'].sum())
+except:
+	TotalBudget = -999
 TotalSpent = int(df_Invoices_Selection['Pre-payment Amount'].sum())
 Absorption=int(100*( df_Invoices_Selection['Pre-payment Amount'].sum()/df_selection['Budget'].sum() ))
 
