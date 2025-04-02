@@ -34,8 +34,8 @@ Best regards,
 Your System"""
 
     msg = MIMEMultipart()
-    sender_email = st.secrets["gmail"]["gmail_account"]
-    sender_password = st.secrets["gmail"]["gmail_password"]
+    sender_email = st.secrets["gcp_service_account"]["gmail_account"]
+    sender_password = st.secrets["gcp_service_account"]["gmail_password"]
 
     msg["From"] = sender_email
     msg["To"] = to_email
