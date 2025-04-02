@@ -22,21 +22,31 @@ st.set_page_config(
 				  )
 
 # Function to send email
-def send_email( to_email, name, due_date, task_FE, taskMilestone, country ):
-    subject = "Overdue milestone Alert"
-    body = f"Dear {name},\n\nThe task with foundational element {task_FE} and milestone {taskMilestone} due on {due_date.date()} for {country} has exceeded the deadline.\n\nPlease take action as soon as possible.\n\nBest regards,\nYour System"
+def send_email(to_email, name, due_date, task_FE, taskMilestone, country):
+    subject = "Overdue Milestone Alert"
+    body = f"""Dear {name},
+
+The task with foundational element '{task_FE}' and milestone '{taskMilestone}' due on {due_date.date()} for {country} has exceeded the deadline.
+
+Please take action as soon as possible.
+
+Best regards,
+Your System"""
 
     msg = MIMEMultipart()
-    msg["From"] = st.secrets["gcp_service_account"]["gmail_account"]
+    sender_email = st.secrets["gmail"]["gmail_account"]
+    sender_password = st.secrets["gmail"]["gmail_password"]
+
+    msg["From"] = sender_email
     msg["To"] = to_email
     msg["Subject"] = subject
     msg.attach(MIMEText(body, "plain"))
 
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login( st.secrets["gcp_service_account"]["gmail_account"], st.secrets["gcp_service_account"]["gmail_password"])
-            #server.sendmail( st.secrets["gcp_service_account"]["gmail_account"], to_email, msg.as_string())
-            server.sendmail( st.secrets["gcp_service_account"]["gmail_account"], st.secrets["gcp_service_account"]["gmail_account"], msg.as_string())
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, sender_email, msg.as_string())  # Send to recipient
+            #server.sendmail(sender_email, to_email, msg.as_string())  # Send to recipient
         print(f"Email sent to {to_email}")
     except Exception as e:
         print(f"Error sending email to {to_email}: {e}")
