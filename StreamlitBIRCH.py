@@ -375,13 +375,22 @@ df_FPData = get_data_from_excel('EmailData', "https://docs.google.com/spreadshee
 df_Overdue = df_Overdue.merge( df_FPData, left_on=['Country'], right_on=['Country'], how='left' )
 #Send an email for each overdue item
 for i, row in df_Overdue.iterrows():
-    last_sent = row.get('LastSentDate', None)  # Get value safely
-    # Ensure last_sent is a datetime or set it to NaT
-    if pd.isna(last_sent):
-        last_sent = pd.NaT
+    last_sent = row.get('LastSentDate', None)  # Get safely
+    # Ensure last_sent is a datetime.date or None
+    if pd.isna(last_sent) or last_sent is None:
+        last_sent = None  # Explicitly set to None
     else:
-        last_sent = pd.to_datetime(last_sent).date()  # Convert to date		
-    print(last_sent)
-    # Check if at least 7 days have passed OR if no email was ever sent
-    if ~(pd.isna(last_sent)) and ((today - last_sent) >= timedelta(days=7)): 
-         send_email( row["Email"], row["RSSH Thematic Focal Point for HRH/CHW"], row["Revised due date (where applicable)"], row['Foundational Element'], row['Milestone + Milestone definition'], row['Country'] )
+        last_sent = pd.to_datetime(last_sent).date()  # Convert to date
+
+    today = datetime.today().date()  # Ensure 'today' is also a date
+
+    # Only check the date difference if last_sent is valid
+    if last_sent is None or (today - last_sent) >= timedelta(days=7):
+        send_email(
+            row["Email"], 
+            row["RSSH Thematic Focal Point for HRH/CHW"], 
+            row["Revised due date (where applicable)"], 
+            row['Foundational Element'], 
+            row['Milestone + Milestone definition'], 
+            row['Country']
+        )
