@@ -385,7 +385,7 @@ for i, row in df_Overdue.iterrows():
     today = datetime.today().date()  # Ensure 'today' is also a date
 
     # Only check the date difference if last_sent is valid
-    if last_sent is None or (today - last_sent) >= timedelta(days=7):
+    if last_sent is not None and (today - last_sent) >= timedelta(days=7):
         send_email(
             row["Email"], 
             row["RSSH Thematic Focal Point for HRH/CHW"], 
