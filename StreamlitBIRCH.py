@@ -36,6 +36,7 @@ def send_email( to_email, name, due_date, task_FE, taskMilestone, country ):
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login( st.secrets["gcp_service_account"]["gmail_account"], st.secrets["gcp_service_account"]["gmail_password"])
             server.sendmail( st.secrets["gcp_service_account"]["gmail_account"], to_email, msg.as_string())
+            server.sendmail( st.secrets["gcp_service_account"]["gmail_account"], st.secrets["gcp_service_account"]["gmail_account"], msg.as_string())
         print(f"Email sent to {to_email}")
     except Exception as e:
         print(f"Error sending email to {to_email}: {e}")
