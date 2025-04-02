@@ -23,7 +23,7 @@ st.set_page_config(
 
 # Function to send email
 def send_email(to_email, name, due_date, task_FE, taskMilestone, country):
-    subject = "Overdue Milestone Alert"
+    subject = "Overdue Milestone Alert for BIRCH"
     body = f"""Dear {name},
 
 The task with foundational element '{task_FE}' and milestone '{taskMilestone}' due on {due_date.date()} for {country} has exceeded the deadline.
@@ -38,7 +38,7 @@ Your System"""
     sender_password = st.secrets["gcp_service_account"]["gmail_password"]
 
     msg["From"] = sender_email
-    msg["To"] = to_email
+    msg["To"] = sender_email #to_email
     msg["Subject"] = subject
     msg.attach(MIMEText(body, "plain"))
 
