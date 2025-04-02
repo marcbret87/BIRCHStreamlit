@@ -27,15 +27,15 @@ def send_email( to_email, name, due_date, task_FE, taskMilestone, country ):
     body = f"Dear {name},\n\nThe task with foundational element {task_FE} and milestone {taskMilestone} due on {due_date.date()} for {country} has exceeded the deadline.\n\nPlease take action as soon as possible.\n\nBest regards,\nYour System"
 
     msg = MIMEMultipart()
-    msg["From"] = st.secrets["gmail_account"]
+    msg["From"] = st.secrets["gcp_service_account"]["gmail_account"]
     msg["To"] = to_email
     msg["Subject"] = subject
     msg.attach(MIMEText(body, "plain"))
 
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(st.secrets["gcp_service_account"], st.secrets["gmail_password"])
-            server.sendmail(st.secrets["gcp_service_account"], to_email, msg.as_string())
+            server.login( st.secrets["gcp_service_account"]["gmail_account"], st.secrets["gcp_service_account"]["gmail_password"])
+            server.sendmail( st.secrets["gcp_service_account"]["gmail_account"], to_email, msg.as_string())
         print(f"Email sent to {to_email}")
     except Exception as e:
         print(f"Error sending email to {to_email}: {e}")
@@ -372,5 +372,5 @@ for i, row in df_Overdue.iterrows():
     else:
         last_sent = pd.to_datetime(last_sent).date()  # Convert to date		
     # Check if at least 7 days have passed OR if no email was ever sent
-    if pd.isna(last_sent) or (today - last_sent) >= timedelta(days=7):
+    if ~(pd.isna(last_sent)) or ((today - last_sent) >= timedelta(days=7)):
 	    send_email( row["Email"], row["RSSH Thematic Focal Point for HRH/CHW"], row["Revised due date (where applicable)"], row['Foundational Element'], row['Milestone + Milestone definition'], row['Country'] )
