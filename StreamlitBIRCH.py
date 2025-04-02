@@ -38,15 +38,15 @@ Your System"""
     sender_password = st.secrets["gcp_service_account"]["gmail_password"]
 
     msg["From"] = sender_email
-    msg["To"] = sender_email #to_email
+    msg["To"] = to_email
     msg["Subject"] = subject
     msg.attach(MIMEText(body, "plain"))
 
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender_email, sender_password)
-            server.sendmail(sender_email, sender_email, msg.as_string())  # Send to recipient
-            #server.sendmail(sender_email, to_email, msg.as_string())  # Send to recipient
+            #server.sendmail(sender_email, sender_email, msg.as_string())  # Send to recipient
+            server.sendmail(sender_email, to_email, msg.as_string())  # Send to recipient
         print(f"Email sent to {to_email}")
     except Exception as e:
         print(f"Error sending email to {to_email}: {e}")
@@ -385,7 +385,7 @@ for i, row in df_Overdue.iterrows():
     today = datetime.today().date()  # Ensure 'today' is also a date
 
     # Only check the date difference if last_sent is valid
-    if last_sent is not None and (today - last_sent) >= timedelta(days=7):
+    if last_sent is not None and ((today - last_sent) >= timedelta(days=14)):
         send_email(
             row["Email"], 
             row["RSSH Thematic Focal Point for HRH/CHW"], 
