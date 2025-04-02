@@ -8,6 +8,11 @@ import os
 import gspread
 from google.oauth2.service_account import Credentials
 from gspread_dataframe import get_as_dataframe
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from datetime import datetime, timedelta
+
 
 #Set page header
 st.set_page_config(
@@ -15,6 +20,25 @@ st.set_page_config(
 							page_icon=":bar_chart:",
 							layout="wide"
 				  )
+
+# Function to send email
+def send_email( to_email, name, due_date, task_FE, taskMilestone, country ):
+    subject = "Overdue milestone Alert"
+    body = f"Dear {name},\n\nThe task with foundational element {task_FE} and milestone {taskMilestone} due on {due_date.date()} for {country} has exceeded the deadline.\n\nPlease take action as soon as possible.\n\nBest regards,\nYour System"
+
+    msg = MIMEMultipart()
+    msg["From"] = st.secrets["gmail_account"]
+    msg["To"] = to_email
+    msg["Subject"] = subject
+    msg.attach(MIMEText(body, "plain"))
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(st.secrets["gcp_service_account"], st.secrets["gmail_password"])
+            server.sendmail(st.secrets["gcp_service_account"], to_email, msg.as_string())
+        print(f"Email sent to {to_email}")
+    except Exception as e:
+        print(f"Error sending email to {to_email}: {e}")
 	
 
 @st.cache_data(ttl=300)  # Cache data for 5 minutes
@@ -323,3 +347,26 @@ fig_Awards_by_ACTAPillar.update_layout(
 left_column, right_column = st.columns(2)
 left_column.plotly_chart(fig_Awards_by_BoardCategory)
 right_column.plotly_chart(fig_Awards_by_ACTAPillar)
+
+#Now check for overdue tasks and send relevant emails
+df_Overdue = df_Budget.copy()
+# Get today's date
+today = pd.Timestamp.today().normalize()
+# Filter overdue items
+df_Overdue = df_Overdue[ (df_Overdue["Revised due date (where applicable)"] < today) & (  ~df_Overdue['Current Status of deliverable'].isin(['Complete'])  )   ]
+#Get email and country focal point data
+df_FPData = get_data_from_excel('EmailData', "https://docs.google.com/spreadsheets/d/1HyeMeiwmFHgwMTYt7vGYYABpiOB3Oq0WdQwY-rj1ATE" )
+#Join the two tables
+df_Overdue = df_Overdue.merge( df_FPData, left_on=['Country'], right_on=['Country'], how='left' )
+#Send an email for each overdue item
+for i, row in df_Overdue.iterrows():
+    last_sent = row.get('LastSentDate', None)  # Get value safely
+
+    # Ensure last_sent is a datetime or set it to NaT
+    if pd.isna(last_sent):
+        last_sent = pd.NaT
+    else:
+        last_sent = pd.to_datetime(last_sent).date()  # Convert to date		
+    # Check if at least 7 days have passed OR if no email was ever sent
+    if pd.isna(last_sent) or (today - last_sent) >= timedelta(days=7):
+	    send_email( row["Email"], row["RSSH Thematic Focal Point for HRH/CHW"], row["Revised due date (where applicable)"], row['Foundational Element'], row['Milestone + Milestone definition'], row['Country'] )
