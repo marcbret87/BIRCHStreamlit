@@ -366,7 +366,6 @@ df_Overdue = df_Overdue.merge( df_FPData, left_on=['Country'], right_on=['Countr
 #Send an email for each overdue item
 for i, row in df_Overdue.iterrows():
     last_sent = row.get('LastSentDate', None)  # Get value safely
-
     # Ensure last_sent is a datetime or set it to NaT
     if pd.isna(last_sent):
         last_sent = pd.NaT
@@ -374,6 +373,5 @@ for i, row in df_Overdue.iterrows():
         last_sent = pd.to_datetime(last_sent).date()  # Convert to date		
     print(last_sent)
     # Check if at least 7 days have passed OR if no email was ever sent
-    if ~(pd.isna(last_sent)) or ((today - last_sent) >= timedelta(days=7)):
-        print('Sending reminder email'  )
-	    send_email( row["Email"], row["RSSH Thematic Focal Point for HRH/CHW"], row["Revised due date (where applicable)"], row['Foundational Element'], row['Milestone + Milestone definition'], row['Country'] )
+    if ~(pd.isna(last_sent)) or ((today - last_sent) >= timedelta(days=7)): 
+         send_email( row["Email"], row["RSSH Thematic Focal Point for HRH/CHW"], row["Revised due date (where applicable)"], row['Foundational Element'], row['Milestone + Milestone definition'], row['Country'] )
