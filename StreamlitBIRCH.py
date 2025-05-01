@@ -363,12 +363,14 @@ right_column.plotly_chart(fig_Awards_by_ACTAPillar)
 df_Overdue = df_Budget.copy()
 # Get today's date
 today = pd.Timestamp.today().normalize()
+overdue_threshold = today - pd.Timedelta(days=14)
 # Convert the "Revised due date (where applicable)" column to datetime
 df_Overdue["Revised due date (where applicable)"] = pd.to_datetime(
     df_Overdue["Revised due date (where applicable)"], errors='coerce'
 )
 # Filter overdue items
-df_Overdue = df_Overdue[ (df_Overdue["Revised due date (where applicable)"] < today) & (  ~df_Overdue['Current Status of deliverable'].isin(['Complete'])  )   ]
+df_Overdue = df_Overdue[ (df_Overdue["Revised due date (where applicable)"] < overdue_threshold) & (  ~df_Overdue['Current Status of deliverable'].isin(['Complete'])  )   ]
+print(df_Overdue.Country.unique())
 #Get email and country focal point data
 df_FPData = get_data_from_excel('EmailData', "https://docs.google.com/spreadsheets/d/1HyeMeiwmFHgwMTYt7vGYYABpiOB3Oq0WdQwY-rj1ATE" )
 #Join the two tables
