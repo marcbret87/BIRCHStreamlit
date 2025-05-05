@@ -42,14 +42,14 @@ Your System"""
     msg["Subject"] = subject
     msg.attach(MIMEText(body, "plain"))
 
-    try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, sender_password)
-            #server.sendmail(sender_email, sender_email, msg.as_string())  # Send to recipient
-            server.sendmail(sender_email, to_email, msg.as_string())  # Send to recipient
-        print(f"Email sent to {to_email}")
-    except Exception as e:
-        print(f"Error sending email to {to_email}: {e}")
+    #try:
+    #    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+    #        server.login(sender_email, sender_password)
+    #        #server.sendmail(sender_email, sender_email, msg.as_string())  # Send to recipient
+    #        server.sendmail(sender_email, to_email, msg.as_string())  # Send to recipient
+    #    print(f"Email sent to {to_email}")
+    #except Exception as e:
+    #    print(f"Error sending email to {to_email}: {e}")
 	
 
 @st.cache_data(ttl=300)  # Cache data for 5 minutes
